@@ -1,76 +1,55 @@
-# Waste Segregation Platform
+# EcoSort - Smart Waste Segregation Platform
 
-A full-stack waste management platform for connecting citizens, dispatch teams, and administrators. Citizens can submit waste collection requests, while authorized teams can manage requests, alerts, and operational workflows.
+EcoSort is an AI-powered waste segregation and management platform that connects citizens, collection workers, and municipal administrators for automated waste classification and optimized collection routing.
 
 ## Tech Stack
 
-- React 19 with Vite
-- React Router
-- Express and Node.js
-- Prisma with SQLite
-- JWT authentication
-- Leaflet and React Leaflet for maps
+- **AI Microservice**: Python, PyTorch, Flask (Port `5001`)
+- **Backend API**: Node.js, Express, Prisma, SQLite (Port `5000`)
+- **Frontend Client**: React 19, Vite, Leaflet Maps (Port `5173`)
 
-## Project Structure
+## Features
 
-```text
-client/   React frontend
-server/   Express API and Prisma database
-```
+- **AI Waste Classification**: Computer vision model to classify waste categories from uploaded images or camera feed.
+- **Citizen Portal**: Submit collection requests, view detection results, and track request status.
+- **Dispatch & Route Optimization**: Worker dashboard with road-snapped navigation for waste pickup.
+- **Admin Dashboard**: Real-time analytics, zone management, audit trails, and worker monitoring.
 
 ## Getting Started
 
 ### Prerequisites
+- Node.js (v18+)
+- Python (v3.9+)
 
-- Node.js 18 or newer
-- npm
-
-### Install and initialize
-
-From the project root:
+### Installation
 
 ```bash
+# 1. Install Python dependencies
+pip install -r requirements.txt
+
+# 2. Install and initialize Frontend & Server
+cd Frontend
+npm install
 npm run setup
+cd ..
 ```
 
-This installs workspace dependencies, generates the Prisma client, creates the local database, and seeds initial data.
+### Running the Application
 
-### Configure the server
-
-Copy `.env.example` to `.env` in the project root and set a secure `JWT_SECRET`. The default development configuration uses:
-
-```env
-PORT=5000
-DATABASE_URL="file:./dev.db"
-CLIENT_URL=http://localhost:5173
-```
-
-### Run the application
-
-Start both the API and frontend together:
+Start all services (AI microservice, Express API, and React frontend) simultaneously:
 
 ```bash
-npm run dev
+# Windows
+start_servers.bat
+
+# Or using Node directly
+node start_servers.js
 ```
 
-The frontend runs at `http://localhost:5173` and the API runs at `http://localhost:5000`.
+### Services & URLs
 
-To run them separately:
-
-```bash
-npm run dev:server
-npm run dev:client
-```
-
-## Useful Commands
-
-```bash
-npm run build        # Build the frontend for production
-npm run db:generate  # Generate the Prisma client
-npm run db:migrate   # Apply database migrations
-npm run db:seed      # Seed initial database data
-```
-
-## Security
-
-Environment files, local databases, dependencies, and build output are excluded from version control. Never commit production secrets or credentials.
+| Service | Technology | URL |
+|---|---|---|
+| **Frontend UI** | React / Vite | `http://localhost:5173` |
+| **Backend API** | Express / Prisma | `http://localhost:5000` |
+| **AI Microservice** | PyTorch / Flask | `http://localhost:5001` |

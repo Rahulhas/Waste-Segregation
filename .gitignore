@@ -1,11 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Node.js
 node_modules/
 dist/
 build/
+
+# Local configuration and databases
 .env
-.env.local
+.env.*
+!.env.example
 *.db
 *.db-journal
-server/prisma/dev.db
-server/prisma/dev.db-journal
-.DS_Store
 *.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+
+# Preserved nested repository metadata
+Frontend/.git-previous/

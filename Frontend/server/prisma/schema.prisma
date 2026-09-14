@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  DRIVER
+  MUNICIPAL_ADMIN
+  SOFTWARE_ADMIN
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  passwordHash   String
+  name           String
+  phone          String?
+  role           Role            @default(USER)
+  isActive       Boolean         @default(true)
+  assignedZoneId String?
+  assignedZone   Zone?           @relation("ZoneWorkers", fields: [assignedZoneId], references: [id])
+  createdById    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  resetTokens    PasswordReset[]
+  auditLogs      AuditLog[]
+  comments       TicketComment[]
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  resource  String?
+  metadata  String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model Zone {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  shortName String
+  centerLat Float
+  centerLng Float
+  bins      SmartBin[]
+  workers   User[]     @relation("ZoneWorkers")
+}
+
+model SmartBin {
+  id        String  @id @default(uuid())
+  label     String
+  lat       Float
+  lng       Float
+  fillLevel Int     @default(0)
+  isActive  Boolean @default(true)
+  zoneId    String
+  zone      Zone    @relation(fields: [zoneId], references: [id])
+
+  @@index([zoneId])
+}
+
+enum CitizenRequestType {
+  overflow
+  missed_pickup
+  damaged_bin
+  bulk_ewaste
+}
+
+enum CitizenRequestStatus {
+  submitted
+  verified
+  dispatched
+  pickup_done
+  admin_verified
+  resolved
+}
+
+model CitizenRequest {
+  id                   String               @id @default(uuid())
+  ticketId             String               @unique
+  citizenName          String
+  contactNumber        String
+  requestType          CitizenRequestType
+  latitude             Float
+  longitude            Float
+  addressString        String
+  zone                 String
+  photoUrl             String?
+  driverProofPhotoUrl  String?
+  isSmartBin           Boolean              @default(false)
+  nearestSmartBinId    String?
+  assignedDriverId     String?
+  status               CitizenRequestStatus @default(submitted)
+  timestamp            DateTime             @default(now())
+  comments             TicketComment[]
+
+  @@index([status, timestamp])
+  @@index([zone])
+  @@index([assignedDriverId])
+}
+
+model TicketComment {
+  id         String         @id @default(uuid())
+  ticketId   String
+  ticket     CitizenRequest @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId   String?
+  author     User?          @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorName String
+  content    String
+  createdAt  DateTime       @default(now())
+
+  @@index([ticketId, createdAt])
+}
